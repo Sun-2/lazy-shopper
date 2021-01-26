@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC, useState } from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -7,12 +7,30 @@ import "normalize.css";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
+import { createGlobalStyle } from "styled-components";
+
+const Main: FC = () => {
+  const dndBackend = matchMedia("(any-hover: hover)").matches
+    ? HTML5Backend
+    : TouchBackend;
+
+  return (
+    <DndProvider backend={dndBackend}>
+      <App />
+    </DndProvider>
+  );
+};
+
+const GlobalStyles = createGlobalStyle`
+  body {
+    position: relative;
+  }
+`;
 
 ReactDOM.render(
   <React.StrictMode>
-    <DndProvider backend={TouchBackend}>
-      <App />
-    </DndProvider>
+    <GlobalStyles />
+    <Main />
   </React.StrictMode>,
   document.getElementById("root")
 );

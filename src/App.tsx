@@ -5,6 +5,7 @@ import { List } from "./List";
 import { AnimatePresence, motion } from "framer-motion";
 import styled from "styled-components";
 import { useDrag } from "react-dnd";
+import { Sidebar } from "./Sidebar";
 
 const variants = {
   exit: {
@@ -72,6 +73,7 @@ const Products: FC = () => {
 function App() {
   return (
     <BrowserRouter>
+      <Sidebar />
       <Route
         render={({ location }) => (
           <>
