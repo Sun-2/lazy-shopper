@@ -9,15 +9,16 @@ import {
   useMapEvent
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { CRS, LatLng, LatLngBounds, Icon } from "leaflet";
+import { CRS, Icon } from "leaflet";
 
 import map from "./map.webp";
 import m from "./map.webp";
-import { motion } from "framer-motion";
 import { useDrop } from "react-dnd";
 import { unstable_batchedUpdates } from "react-dom";
 
-export type MapProps = {};
+export type ShopMapProps = {
+  focused: boolean;
+};
 
 const Comp = (props: { onMarkerAdd: (pos: [number, number]) => void }) => {
   useMapEvent("click", e => {
@@ -41,14 +42,8 @@ const Comp = (props: { onMarkerAdd: (pos: [number, number]) => void }) => {
 
   useEffect(() => {
     ref(document.getElementById("map"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  /*useEffect(() => {
-    const int = setInterval(() => {
-      console.log(map.containerPointToLatLng([0, 0]));
-    }, 200);
-    return () => clearInterval(int);
-  }, []);*/
 
   return null;
 };
@@ -59,14 +54,12 @@ const icon = new Icon({
   iconAnchor: [30, 60]
 });
 
-export const MyMap: FC<MapProps> = ({ ...rest }) => {
+export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
   const [url, setUrl] = useState<string>("");
   const [[width, height], setBounds] = useState([0, 0]);
 
   const [markers, setMarkers] = useState<[number, number][]>([]);
-
   useEffect(() => {
-    //const canvas = $canvas.current!;
     const canvas = document.createElement("canvas");
     const image = new Image();
     image.onload = () => {
@@ -93,11 +86,7 @@ export const MyMap: FC<MapProps> = ({ ...rest }) => {
 
     image.src = m;
   }, []);
-  if (url) console.log(url, width, height);
 
-  const [, ref] = useDrop({
-    accept: "product"
-  });
   return (
     <>
       {url && (
@@ -109,9 +98,19 @@ export const MyMap: FC<MapProps> = ({ ...rest }) => {
           maxZoom={5}
           crs={CRS.Simple}
           //scrollWheelZoom={false}
-          style={{ height: "90vh", width: "100vw" }}
+          style={{ height: "100%", width: "100%" }}
         >
-          <Comp onMarkerAdd={pos => setMarkers(x => [...x, pos])} />
+          <Comp
+            onMarkerAdd={pos =>
+              setMarkers(prev => {
+                /* Check if there's already a marker at these coords. */
+                const canAdd = !markers.find(
+                  ([mLng, mLat]) => mLng === pos[0] && mLat === pos[1]
+                );
+                return canAdd ? [...prev, pos] : prev;
+              })
+            }
+          />
           <ImageOverlay
             url={map}
             bounds={[
@@ -120,7 +119,7 @@ export const MyMap: FC<MapProps> = ({ ...rest }) => {
             ]}
           />
           {markers.map((pos, i) => (
-            <Marker position={pos} icon={icon} key={pos.join("")}>
+            <Marker position={pos} icon={icon} key={pos.join("|")}>
               <Popup>
                 <div>Hi!</div>{" "}
                 <div
