@@ -16,7 +16,6 @@ export const Shop: FC = () => {
     const index = locations.findIndex(({ path }) => path === pathSegments[0]);
     return index === -1 ? 0 : index;
   });
-
   const onTabsChange = (_: any, newValue: number) => {
     setTabSelected(newValue);
     history.push(locations[newValue].path);
@@ -24,7 +23,8 @@ export const Shop: FC = () => {
 
   const firstSegment = pathSegments[0];
   useLayoutEffect(() => {
-    setTabSelected(locations.findIndex(loc => loc.path === firstSegment));
+    const tabIndex = locations.findIndex(loc => loc.path === firstSegment);
+    setTabSelected(tabIndex === -1 ? 0 : tabIndex);
   }, [firstSegment]);
 
   return (

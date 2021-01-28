@@ -18,6 +18,9 @@ import { unstable_batchedUpdates } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getMarkersForCurrentMap, shopSlice } from "../slice";
 import { Button, Divider, Typography } from "@material-ui/core";
+import { useMarkersForCurrentMap } from "../hooks/useMarkersForCurrentMap";
+import { useSetMarker } from "../hooks/useSetMarker";
+import { useDeleteMarker } from "../hooks/useDeleteMarker";
 
 export type ShopMapProps = {
   focused: boolean;
@@ -37,14 +40,12 @@ const randomName = () => {
 };
 
 const MapEventHandler = (props: {}) => {
-  const dispatch = useDispatch();
-  const addMarker = (latLng: LatLngExpression) =>
-    dispatch(
-      shopSlice.actions.addMarkerForCurrentMap({
-        name: randomName(),
-        latLng
-      })
-    );
+  const setMarker = useSetMarker();
+
+  const addMarker = (latLng: LatLngExpression) => {
+    setMarker!(randomName(), latLng);
+  };
+
   useMapEvent("click", e => {
     addMarker([e.latlng.lat, e.latlng.lng]);
   });
@@ -84,7 +85,9 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
   const [url, setUrl] = useState<string>("");
   const [[width, height], setBounds] = useState([0, 0]);
 
-  const markers = useSelector(getMarkersForCurrentMap);
+  const [markers, loading, err] = useMarkersForCurrentMap<any>();
+
+  //const markers = useSelector(getMarkersForCurrentMap);
   useEffect(() => {
     const canvas = document.createElement("canvas");
     const image = new Image();
@@ -113,6 +116,8 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
     image.src = m;
   }, []);
 
+  const deleteMarker = useDeleteMarker()!;
+
   return (
     <>
       {url && (
@@ -132,23 +137,23 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
               [height, width]
             ]}
           />
-          {Object.entries(markers).map(([name, pos], i) => (
-            <Marker position={pos} icon={icon} key={name + pos.toString()}>
-              <Popup>
-                <Typography variant="h6">Hi!</Typography>{" "}
-                <Typography variant="subtitle1">I am {name}</Typography>
-                <Divider />
-                <Button
-                  size="small"
-                  onClick={() => {
-                    dispatch(shopSlice.actions.removeMarkerForCurrentMap(name));
-                  }}
-                >
-                  Please click me to erase my pitiful existence.
-                </Button>
-              </Popup>
-            </Marker>
-          ))}
+          {markers &&
+            Object.entries(markers).map(([name, pos], i) => (
+              <Marker
+                position={pos as any}
+                icon={icon}
+                key={name + (pos as any).toString()}
+              >
+                <Popup>
+                  <Typography variant="h6">Hi!</Typography>{" "}
+                  <Typography variant="subtitle1">I am {name}</Typography>
+                  <Divider />
+                  <Button size="small" onClick={() => deleteMarker(name)}>
+                    Please click me to erase my pitiful existence.
+                  </Button>
+                </Popup>
+              </Marker>
+            ))}
         </MapContainer>
       )}
     </>

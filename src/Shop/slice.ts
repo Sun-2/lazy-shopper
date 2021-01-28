@@ -37,3 +37,4 @@ export const shopSlice = createSlice({
 
 export const getMarkersForCurrentMap = (state: RootState) =>
   state.shop.markers[state.shop.currentMap];
+export const getCurrentMap = (state: RootState) => state.shop.currentMap;
