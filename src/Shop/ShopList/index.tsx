@@ -17,7 +17,7 @@ export const ShopList: FC<ShopListProps> = ({ focused }) => {
     collect: m => ({
       isDragging: m.isDragging()
     }),
-    begin: monitor => {
+    begin: () => {
       history.push(shopMapPath);
     }
   });

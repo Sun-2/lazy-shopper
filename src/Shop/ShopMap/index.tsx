@@ -9,20 +9,44 @@ import {
   useMapEvent
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { CRS, Icon } from "leaflet";
+import { CRS, Icon, LatLngExpression } from "leaflet";
 
 import map from "./map.webp";
 import m from "./map.webp";
 import { useDrop } from "react-dnd";
 import { unstable_batchedUpdates } from "react-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getMarkersForCurrentMap, shopSlice } from "../slice";
+import { Button, Divider, Typography } from "@material-ui/core";
 
 export type ShopMapProps = {
   focused: boolean;
 };
 
-const Comp = (props: { onMarkerAdd: (pos: [number, number]) => void }) => {
+const randomName = () => {
+  const names = [
+    "Pomidor",
+    "Pomarańcza",
+    "Brzoskwinie",
+    "Ogórek",
+    "Bułczan",
+    "Chlebowian",
+    "Jogurcian"
+  ];
+  return names[Math.floor(Math.random() * names.length)];
+};
+
+const MapEventHandler = (props: {}) => {
+  const dispatch = useDispatch();
+  const addMarker = (latLng: LatLngExpression) =>
+    dispatch(
+      shopSlice.actions.addMarkerForCurrentMap({
+        name: randomName(),
+        latLng
+      })
+    );
   useMapEvent("click", e => {
-    props.onMarkerAdd([e.latlng.lat, e.latlng.lng]);
+    addMarker([e.latlng.lat, e.latlng.lng]);
   });
 
   const map = useMap();
@@ -36,7 +60,7 @@ const Comp = (props: { onMarkerAdd: (pos: [number, number]) => void }) => {
       const lat = offset!.x - bounds.left;
       const point = map.containerPointToLatLng([lat, lng]);
 
-      props.onMarkerAdd([point.lat, point.lng]);
+      addMarker([point.lat, point.lng]);
     }
   });
 
@@ -55,10 +79,12 @@ const icon = new Icon({
 });
 
 export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
+  const dispatch = useDispatch();
+
   const [url, setUrl] = useState<string>("");
   const [[width, height], setBounds] = useState([0, 0]);
 
-  const [markers, setMarkers] = useState<[number, number][]>([]);
+  const markers = useSelector(getMarkersForCurrentMap);
   useEffect(() => {
     const canvas = document.createElement("canvas");
     const image = new Image();
@@ -92,25 +118,13 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
       {url && (
         <MapContainer
           id="map"
-          //ref={ref}
           center={[width / 2, height / 2]}
           zoom={2}
           maxZoom={5}
           crs={CRS.Simple}
-          //scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
         >
-          <Comp
-            onMarkerAdd={pos =>
-              setMarkers(prev => {
-                /* Check if there's already a marker at these coords. */
-                const canAdd = !markers.find(
-                  ([mLng, mLat]) => mLng === pos[0] && mLat === pos[1]
-                );
-                return canAdd ? [...prev, pos] : prev;
-              })
-            }
-          />
+          <MapEventHandler />
           <ImageOverlay
             url={map}
             bounds={[
@@ -118,21 +132,20 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
               [height, width]
             ]}
           />
-          {markers.map((pos, i) => (
-            <Marker position={pos} icon={icon} key={pos.join("|")}>
+          {Object.entries(markers).map(([name, pos], i) => (
+            <Marker position={pos} icon={icon} key={name + pos.toString()}>
               <Popup>
-                <div>Hi!</div>{" "}
-                <div
-                  onClick={() =>
-                    setMarkers(prev => {
-                      const cpy = [...prev];
-                      cpy.splice(i, 1);
-                      return cpy;
-                    })
-                  }
+                <Typography variant="h6">Hi!</Typography>{" "}
+                <Typography variant="subtitle1">I am {name}</Typography>
+                <Divider />
+                <Button
+                  size="small"
+                  onClick={() => {
+                    dispatch(shopSlice.actions.removeMarkerForCurrentMap(name));
+                  }}
                 >
-                  Click me to remove
-                </div>
+                  Please click me to erase my pitiful existence.
+                </Button>
               </Popup>
             </Marker>
           ))}
