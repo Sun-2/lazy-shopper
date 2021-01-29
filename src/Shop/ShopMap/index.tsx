@@ -2,7 +2,6 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import {
   MapContainer,
   Popup,
-  Marker,
   TileLayer,
   ImageOverlay,
   useMap,
@@ -21,6 +20,7 @@ import { Button, Divider, Typography } from "@material-ui/core";
 import { useMarkersForCurrentMap } from "../hooks/useMarkersForCurrentMap";
 import { useSetMarker } from "../hooks/useSetMarker";
 import { useDeleteMarker } from "../hooks/useDeleteMarker";
+import { Marker, MARKER_DRAG_TYPE } from "./Marker";
 
 export type ShopMapProps = {
   focused: boolean;
@@ -48,12 +48,13 @@ const MapEventHandler = (props: {}) => {
 
   useMapEvent("click", e => {
     addMarker([e.latlng.lat, e.latlng.lng]);
+
   });
 
   const map = useMap();
 
   const [, ref] = useDrop({
-    accept: "product",
+    accept: MARKER_DRAG_TYPE,
     drop: (item, monitor) => {
       const offset = monitor.getClientOffset();
       const bounds = document.getElementById("map")!.getBoundingClientRect();
@@ -141,7 +142,6 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
             Object.entries(markers).map(([name, pos], i) => (
               <Marker
                 position={pos as any}
-                icon={icon}
                 key={name + (pos as any).toString()}
               >
                 <Popup>
