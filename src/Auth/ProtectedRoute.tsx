@@ -5,7 +5,7 @@ import { auth } from "../firebase";
 import { loginPath } from "./routing";
 
 export const ProtectedRoute: FC<RouteProps> = ({ children, ...rest }) => {
-  const [user, loading, error] = useAuthState(auth);
+  const [user] = useAuthState(auth);
 
   return (
     <Route {...rest}>

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../redux/RootState";
 import { LatLngExpression } from "leaflet";
-import moment, { Moment } from "moment";
+import moment from "moment";
 
 const initialState = {
   markers: {

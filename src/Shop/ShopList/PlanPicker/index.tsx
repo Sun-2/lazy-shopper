@@ -8,7 +8,6 @@ import {
 import React from "react";
 import { FC } from "react";
 import {
-  useCollectionData,
   useDocumentData
 } from "react-firebase-hooks/firestore";
 import { auth, firestore } from "../../../firebase";
@@ -21,7 +20,7 @@ export const PlanPicker: FC = () => {
   const currentPlan = useSelector(getCurrentPlan);
 
   const [user] = useAuthState(auth);
-  const [data, loading, error]: any[] = useDocumentData<any>(
+  const [data]: any[] = useDocumentData<any>(
     !user ? null : firestore.collection("plans").doc(user.uid)
   );
 

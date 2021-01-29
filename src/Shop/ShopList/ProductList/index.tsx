@@ -13,12 +13,15 @@ import { Divider } from "@material-ui/core";
 export const List: FC = () => {
   const [user] = useAuthState(auth);
 
-  const [data, loading, error]: any[] = useDocumentData(
+  const [data]: any[] = useDocumentData(
     !user ? null : firestore.collection(firestorePlanCollection).doc(user.uid)
   );
 
   const currentPlan = useSelector(getCurrentPlan);
-  const products = currentPlan ? data?.[currentPlan] : [];
+  const products = useMemo(() => (currentPlan ? data?.[currentPlan] : []), [
+    currentPlan,
+    data
+  ]);
 
   const startDate = useSelector(getStartDay);
   const endDate = useSelector(getEndDay);
@@ -52,7 +55,7 @@ export const List: FC = () => {
             return acc;
           }, {})
         );
-  }, [getVisibleDays]);
+  }, [getVisibleDays, products]);
 
   if (!data || !(currentPlan in data)) return <div>Choose your plan.</div>;
 

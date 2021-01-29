@@ -5,11 +5,9 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-import moment from "moment";
 import { useSelector } from "react-redux";
 import { getEndDay, getStartDay, shopSlice } from "../../slice";
 import { useAppDispatch } from "../../../redux/useAppDispatch";
-import { Box } from "@material-ui/core";
 
 export const DatePicker: FC = () => {
   const startDay = useSelector(getStartDay);

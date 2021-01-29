@@ -1,9 +1,9 @@
 import { AppBar, Box, Tab, Tabs } from "@material-ui/core";
-import React, { FC, useEffect, useLayoutEffect, useState } from "react";
+import React, { FC, useLayoutEffect, useState } from "react";
 import { Root } from "./styles";
 import { ShopMap } from "./ShopMap";
 import { ShopList } from "./ShopList";
-import { Link, useHistory, useLocation, useRouteMatch } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { usePathSegments } from "../utils/usePathSegments";
 import { shopMapPath } from "./ShopMap/routing";
 import { shopListPath } from "./ShopList/routing";

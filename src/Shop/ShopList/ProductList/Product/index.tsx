@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { FC } from "react";
-import { ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {Box, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import { useDrag } from "react-dnd";
 import { MARKER_DRAG_TYPE } from "../../../ShopMap/Marker";
 import { shopMapPath } from "../../../ShopMap/routing";
@@ -14,7 +14,7 @@ export type ProductProps = {
 
 export const Product: FC<ProductProps> = memo(({ amount, name, ...rest }) => {
   const { push } = useHistory();
-  const [{ isDragging }, ref] = useDrag({
+  const [, ref] = useDrag({
     item: { type: MARKER_DRAG_TYPE, name, amount },
     collect: m => ({
       isDragging: m.isDragging()
@@ -30,8 +30,9 @@ export const Product: FC<ProductProps> = memo(({ amount, name, ...rest }) => {
         <PinDropIcon />
       </ListItemIcon>
       <ListItemText>
-        {amount} {name} g
+        <b style={{ textTransform: "capitalize" }}>{name}</b>{" "}
       </ListItemText>
+      <Box ml={2}>{amount}g</Box>
     </ListItem>
   );
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { GlobalStyles } from "./GlobalStyles";
 import { Shop } from "./Shop";
 import { store } from "./redux/store";
@@ -14,7 +14,7 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "./styles/theme";
 
 function App() {
-  const [user, loading, error] = useAuthState(auth);
+  const [,loading] = useAuthState(auth);
 
   if (loading) return <div>Loading</div>;
 

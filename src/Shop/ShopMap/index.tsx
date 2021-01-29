@@ -1,25 +1,28 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   MapContainer,
   Popup,
-  TileLayer,
   ImageOverlay,
-  useMap,
-  useMapEvent
+  useMap
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
-import { CRS, Icon, LatLngExpression } from "leaflet";
+import { CRS, LatLngExpression } from "leaflet";
 
 import map from "./map.webp";
 import m from "./map.webp";
 import { useDrop } from "react-dnd";
 import { unstable_batchedUpdates } from "react-dom";
-import { Button, Divider, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Divider,
+  Typography
+} from "@material-ui/core";
 import { useMarkersForCurrentMap } from "../hooks/useMarkersForCurrentMap";
 import { useSetMarker } from "../hooks/useSetMarker";
 import { useDeleteMarker } from "../hooks/useDeleteMarker";
 import { Marker, MARKER_DRAG_TYPE } from "./Marker";
-import { useAppDispatch } from "../../redux/useAppDispatch";
 
 export type ShopMapProps = {
   focused: boolean;
@@ -64,7 +67,7 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
   const [url, setUrl] = useState<string>("");
   const [[width, height], setBounds] = useState([0, 0]);
 
-  const [markers, loading, err] = useMarkersForCurrentMap<any>();
+  const [markers] = useMarkersForCurrentMap<any>();
 
   //const markers = useSelector(getMarkersForCurrentMap);
   useEffect(() => {
@@ -123,12 +126,22 @@ export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
                 key={name + (pos as any).toString()}
               >
                 <Popup>
-                  <Typography variant="h6">Hi!</Typography>{" "}
-                  <Typography variant="subtitle1">I am {name}</Typography>
+                  <Typography
+                    variant="h6"
+                    style={{ textTransform: "capitalize" }}
+                  >
+                    {name}
+                  </Typography>{" "}
+                  <Typography variant="subtitle1">600g</Typography>
                   <Divider />
-                  <Button size="small" onClick={() => deleteMarker(name)}>
-                    Please click me to erase my pitiful existence.
-                  </Button>
+                  <Box mt={2}>
+                    <ButtonGroup size="small" orientation="vertical" fullWidth>
+                      <Button>Got it</Button>
+                      <Button onClick={() => deleteMarker(name)}>
+                        Delete marker
+                      </Button>
+                    </ButtonGroup>
+                  </Box>
                 </Popup>
               </Marker>
             ))}
