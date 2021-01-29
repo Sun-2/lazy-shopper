@@ -14,42 +14,27 @@ import map from "./map.webp";
 import m from "./map.webp";
 import { useDrop } from "react-dnd";
 import { unstable_batchedUpdates } from "react-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getMarkersForCurrentMap, shopSlice } from "../slice";
 import { Button, Divider, Typography } from "@material-ui/core";
 import { useMarkersForCurrentMap } from "../hooks/useMarkersForCurrentMap";
 import { useSetMarker } from "../hooks/useSetMarker";
 import { useDeleteMarker } from "../hooks/useDeleteMarker";
 import { Marker, MARKER_DRAG_TYPE } from "./Marker";
+import { useAppDispatch } from "../../redux/useAppDispatch";
 
 export type ShopMapProps = {
   focused: boolean;
 };
 
-const randomName = () => {
-  const names = [
-    "Pomidor",
-    "Pomarańcza",
-    "Brzoskwinie",
-    "Ogórek",
-    "Bułczan",
-    "Chlebowian",
-    "Jogurcian"
-  ];
-  return names[Math.floor(Math.random() * names.length)];
-};
-
 const MapEventHandler = (props: {}) => {
   const setMarker = useSetMarker();
 
-  const addMarker = (latLng: LatLngExpression) => {
-    setMarker!(randomName(), latLng);
+  const addMarker = (name: string, latLng: LatLngExpression) => {
+    setMarker!(name, latLng);
   };
 
-  useMapEvent("click", e => {
+  /*useMapEvent("click", e => {
     addMarker([e.latlng.lat, e.latlng.lng]);
-
-  });
+  });*/
 
   const map = useMap();
 
@@ -61,8 +46,9 @@ const MapEventHandler = (props: {}) => {
       const lng = offset!.y - bounds.top;
       const lat = offset!.x - bounds.left;
       const point = map.containerPointToLatLng([lat, lng]);
+      const { name } = monitor.getItem();
 
-      addMarker([point.lat, point.lng]);
+      addMarker(name, [point.lat, point.lng]);
     }
   });
 
@@ -74,15 +60,7 @@ const MapEventHandler = (props: {}) => {
   return null;
 };
 
-const icon = new Icon({
-  iconUrl: "https://i.imgur.com/KDsBacM.png",
-  iconSize: [60, 60],
-  iconAnchor: [30, 60]
-});
-
 export const ShopMap: FC<ShopMapProps> = ({ focused, ...rest }) => {
-  const dispatch = useDispatch();
-
   const [url, setUrl] = useState<string>("");
   const [[width, height], setBounds] = useState([0, 0]);
 

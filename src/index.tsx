@@ -8,6 +8,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { createGlobalStyle } from "styled-components";
+import { CssBaseline } from "@material-ui/core";
 
 const Main: FC = () => {
   const dndBackend = matchMedia("(any-hover: hover)").matches
@@ -29,6 +30,7 @@ const GlobalStyles = createGlobalStyle`
 
 ReactDOM.render(
   <React.StrictMode>
+    <CssBaseline />
     <GlobalStyles />
     <Main />
   </React.StrictMode>,

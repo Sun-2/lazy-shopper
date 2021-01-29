@@ -14,7 +14,6 @@ import ListAltIcon from "@material-ui/icons/ListAlt";
 export const Shop: FC = () => {
   const pathSegments = usePathSegments();
 
-
   const history = useHistory();
   const [tabSelected, setTabSelected] = useState(() => {
     const index = locations.findIndex(({ path }) => path === pathSegments[0]);
@@ -41,7 +40,7 @@ export const Shop: FC = () => {
   );
 
   const tabItems = (
-    <AppBar position="static">
+    <AppBar position="static" color="transparent">
       <Tabs variant="fullWidth" value={tabSelected} onChange={onTabsChange}>
         {locations.map(({ path, icon }) => (
           <Tab key={path} icon={icon} />
